@@ -46,7 +46,7 @@ public class SimulatorGUI extends Application {
 
         // Left: Visualization
         centerSplit.getItems().add(createVisualizationPanel());
-        
+
         // Right: Log
         centerSplit.getItems().add(createLogPanel());
 
@@ -93,9 +93,9 @@ public class SimulatorGUI extends Application {
         cycleLabel = new Label("Cycle: 0");
         cycleLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #0066cc;");
 
-        controlBox.getChildren().addAll(fileLabel, fileNameField, runButton, stepButton, runAllButton, clearButton, 
-                                       new Separator(javafx.geometry.Orientation.VERTICAL), cycleLabel);
-        
+        controlBox.getChildren().addAll(fileLabel, fileNameField, runButton, stepButton, runAllButton, clearButton,
+                new Separator(javafx.geometry.Orientation.VERTICAL), cycleLabel);
+
         panel.getChildren().add(controlBox);
         return panel;
     }
@@ -130,7 +130,7 @@ public class SimulatorGUI extends Application {
 
         ScrollPane sp = new ScrollPane(new VBox(10, queueBox, rsBox, regBox, cacheBox));
         sp.setFitToWidth(true);
-        
+
         panel.getChildren().add(sp);
         return panel;
     }
@@ -150,7 +150,7 @@ public class SimulatorGUI extends Application {
 
         VBox.setVgrow(logArea, Priority.ALWAYS);
         panel.getChildren().addAll(title, logArea);
-        
+
         return panel;
     }
 
@@ -161,10 +161,10 @@ public class SimulatorGUI extends Application {
 
         Label titleLabel = new Label(title);
         titleLabel.setStyle("-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #0066cc;");
-        
+
         Separator sep = new Separator();
         box.getChildren().addAll(titleLabel, sep);
-        
+
         return box;
     }
 
@@ -253,24 +253,24 @@ public class SimulatorGUI extends Application {
 
         try {
             appendLog("📂 Loading from: " + filename + "\n");
-            
+
             steppableSimulator = new SteppableSimulator();
             steppableSimulator.loadInstructions(filename);
             steppableSimulator.initialize();
             simulationLoaded = true;
-            
+
             int instrCount = steppableSimulator.getInstructionQueue().size();
             appendLog("✓ Loaded " + instrCount + " instructions\n");
             appendLog("✓ Ready to step through simulation\n\n");
-            
+
             // Enable step buttons
             stepButton.setDisable(false);
             runAllButton.setDisable(false);
             fileNameField.setDisable(true);
             runButton.setDisable(true);
-            
+
             updateTablesFromSimulator();
-            
+
         } catch (Exception e) {
             appendLog("❌ Error: " + e.getMessage() + "\n");
             simulationLoaded = false;
@@ -286,7 +286,7 @@ public class SimulatorGUI extends Application {
         try {
             steppableSimulator.stepCycle();
             updateTablesFromSimulator();
-            
+
             if (steppableSimulator.isFinished()) {
                 appendLog("\n✓ Simulation finished at cycle " + steppableSimulator.getCycle() + "\n");
                 stepButton.setDisable(true);
@@ -311,17 +311,15 @@ public class SimulatorGUI extends Application {
                 int startCycle = steppableSimulator.getCycle();
                 while (!steppableSimulator.isFinished()) {
                     steppableSimulator.stepCycle();
-                    Thread.sleep(50);  // Small delay to show progress
+                    Thread.sleep(50); // Small delay to show progress
                 }
-                
+
                 javafx.application.Platform.runLater(() -> {
                     updateTablesFromSimulator();
                     appendLog("\n✓ Simulation finished at cycle " + steppableSimulator.getCycle() + "\n");
                 });
             } catch (Exception e) {
-                javafx.application.Platform.runLater(() -> 
-                    appendLog("❌ Error: " + e.getMessage() + "\n")
-                );
+                javafx.application.Platform.runLater(() -> appendLog("❌ Error: " + e.getMessage() + "\n"));
             }
         });
         runThread.setDaemon(true);
@@ -329,28 +327,28 @@ public class SimulatorGUI extends Application {
     }
 
     private void updateTablesFromSimulator() {
-        if (steppableSimulator == null) return;
-        
+        if (steppableSimulator == null)
+            return;
+
         javafx.application.Platform.runLater(() -> {
             // Update cycle label
             cycleLabel.setText(String.format("Cycle: %d", steppableSimulator.getCycle()));
-            
+
             // Update RS table
             rsData.clear();
             List<ReservationStation> stations = steppableSimulator.getReservationStations();
             for (ReservationStation rs : stations) {
                 rsData.add(new RSDisplay(
-                    rs.name,
-                    rs.busy ? "Yes" : "No",
-                    rs.op != null ? rs.op : "-",
-                    rs.dest != null ? rs.dest : "-",
-                    rs.vj != null ? String.format("%.2f", rs.vj) : "-",
-                    rs.vk != null ? String.format("%.2f", rs.vk) : "-",
-                    rs.qj != null ? rs.qj : "-",
-                    rs.qk != null ? rs.qk : "-"
-                ));
+                        rs.name,
+                        rs.busy ? "Yes" : "No",
+                        rs.op != null ? rs.op : "-",
+                        rs.dest != null ? rs.dest : "-",
+                        rs.vj != null ? String.format("%.2f", rs.vj) : "-",
+                        rs.vk != null ? String.format("%.2f", rs.vk) : "-",
+                        rs.qj != null ? rs.qj : "-",
+                        rs.qk != null ? rs.qk : "-"));
             }
-            
+
             // Update Register File table
             regData.clear();
             RegisterFile rf = steppableSimulator.getRegisterFile();
@@ -366,7 +364,7 @@ public class SimulatorGUI extends Application {
                     }
                 }
             }
-            
+
             // Update instruction queue
             List<Instruction> queue = steppableSimulator.getInstructionQueue();
             StringBuilder queueStr = new StringBuilder();
@@ -392,7 +390,7 @@ public class SimulatorGUI extends Application {
     // Helper classes for table display
     public static class RSDisplay {
         public String name, busy, op, dest, vj, vk, qj, qk;
-        
+
         public RSDisplay(String name, String busy, String op, String dest, String vj, String vk, String qj, String qk) {
             this.name = name;
             this.busy = busy;
@@ -407,7 +405,7 @@ public class SimulatorGUI extends Application {
 
     public static class RegDisplay {
         public String name, value;
-        
+
         public RegDisplay(String name, String value) {
             this.name = name;
             this.value = value;

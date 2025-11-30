@@ -81,15 +81,15 @@ public class TomasuloSimulator {
 
     public boolean executeCycle() {
         final int maxCycles = 10000;
-        
+
         if (cycle >= maxCycles) {
             return false;
         }
-        
+
         if (instructionQueue.isEmpty() && !hasActiveStations()) {
             return false;
         }
-        
+
         cycle++;
         System.out.println("Cycle " + cycle);
 
@@ -104,7 +104,7 @@ public class TomasuloSimulator {
 
         // Print state
         printState();
-        
+
         // Return true if more cycles can be executed
         return (!instructionQueue.isEmpty() || hasActiveStations()) && cycle < maxCycles;
     }

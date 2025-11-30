@@ -23,8 +23,9 @@ public class SteppableSimulator {
     }
 
     public void initialize() {
-        if (initialized) return;
-        
+        if (initialized)
+            return;
+
         Map<String, Integer> latencies = new HashMap<>();
         latencies.put("LD", 2);
         latencies.put("SD", 2);
@@ -37,11 +38,11 @@ public class SteppableSimulator {
         latencies.put("BNE", 1);
 
         simulator = new TomasuloSimulator(2, 2, 3, 2, latencies, 1024, 4, 1, 10);
-        
+
         for (String instr : instructions) {
             simulator.addInstruction(instr);
         }
-        
+
         initialized = true;
         finished = false;
     }
@@ -50,14 +51,14 @@ public class SteppableSimulator {
         if (!initialized) {
             throw new IllegalStateException("Simulator not initialized. Call initialize() first.");
         }
-        
+
         if (finished) {
             throw new IllegalStateException("Simulation already finished.");
         }
 
         // Call the internal step method (we'll need to add this to TomasuloSimulator)
         boolean hasMore = simulator.executeCycle();
-        
+
         if (!hasMore) {
             finished = true;
         }
